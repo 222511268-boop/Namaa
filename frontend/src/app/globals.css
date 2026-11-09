@@ -1,0 +1,532 @@
+@import "tailwindcss";
+
+/*
+ * Namaa design tokens ("Oasis Instrument" design system).
+ *
+ * Every colour, size, radius, shadow and motion value used by components comes from these variables.
+ * Light is the default; dark is chosen by the OS (prefers-color-scheme) unless the user picks a theme,
+ * which sets data-theme="light" | "dark" on <html> before first paint.
+ * Text pairs are checked to WCAG AA (>= 4.5:1); chart series are checked with the dataviz validator.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --c-canvas: #f6f4ee;
+  --c-surface: #ffffff;
+  --c-surface-2: #f1eee6;
+  --c-overlay: rgb(18 26 21 / 0.42);
+  --c-line: #e4e0d5;
+  --c-line-strong: #cfc9ba;
+
+  /* text */
+  --c-ink: #121a15;
+  --c-ink-2: #3f4a43;
+  --c-muted: #5e6862;
+
+  /* brand and status (text on *-soft and *-ink on surfaces are AA) */
+  --c-primary: #17654a;
+  --c-primary-hover: #11523c;
+  --c-primary-soft: #e6f0ea;
+  --c-primary-ink: #145a42;
+  --c-on-primary: #ffffff;
+  --c-signal: #c2410c;
+  --c-signal-soft: #fcede4;
+  --c-signal-ink: #9a3412;
+  --c-warn: #b45309;
+  --c-warn-soft: #fbf1dd;
+  --c-warn-ink: #7c4a03;
+  --c-danger: #b42318;
+  --c-danger-soft: #fcebe9;
+  --c-danger-ink: #912018;
+  --c-info: #1d5fae;
+  --c-info-soft: #e8f1fc;
+  --c-info-ink: #1a4f8f;
+  --c-focus: #17654a;
+
+  /* data */
+  --c-series-ndvi: #008300;
+  --c-series-ndmi: #2a78d6;
+  --c-factor-1: #2a78d6;
+  --c-factor-2: #eb6834;
+  --c-factor-3: #1baf7a;
+  --c-factor-4: #eda100;
+  --c-factor-5: #e87ba4;
+  --c-ndvi-1: #e3eedb;
+  --c-ndvi-2: #b5dbab;
+  --c-ndvi-3: #7dbd76;
+  --c-ndvi-4: #3f9548;
+  --c-ndvi-5: #16692a;
+  --c-ndvi-none: #bdb8a8;
+  --c-map-outline: #174a36;
+  --c-map-highlight: #c2860f;
+
+  /* elevation */
+  --shadow-xs: 0 1px 2px rgb(18 26 21 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(18 26 21 / 0.04), 0 2px 8px rgb(18 26 21 / 0.05);
+  --shadow-md: 0 2px 4px rgb(18 26 21 / 0.04), 0 8px 24px rgb(18 26 21 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(18 26 21 / 0.05), 0 16px 48px rgb(18 26 21 / 0.14);
+  /* glow: focus and selection (subtle depth, one hue) */
+  --shadow-glow: 0 0 0 4px rgb(23 101 74 / 0.14), 0 0 24px rgb(23 101 74 / 0.16);
+  /* glass: translucent panels used only over the map */
+  --c-glass: rgb(255 255 255 / 0.74);
+
+  /* motion: purposeful only, 150-300 ms, transform/opacity */
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-slow: 280ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --c-canvas: #0e1411;
+    --c-surface: #151d18;
+    --c-surface-2: #1b251f;
+    --c-overlay: rgb(0 0 0 / 0.55);
+    --c-line: #26332b;
+    --c-line-strong: #374740;
+    --c-ink: #e9efea;
+    --c-ink-2: #b9c4bc;
+    --c-muted: #93a097;
+    --c-primary: #4fc08d;
+    --c-primary-hover: #6bd0a1;
+    --c-primary-soft: #183026;
+    --c-primary-ink: #7bd8ae;
+    --c-on-primary: #0b1a13;
+    --c-signal: #fb8a5c;
+    --c-signal-soft: #3a1f14;
+    --c-signal-ink: #ffb08f;
+    --c-warn: #f0b25a;
+    --c-warn-soft: #34270f;
+    --c-warn-ink: #f6c77f;
+    --c-danger: #f2756a;
+    --c-danger-soft: #3a1715;
+    --c-danger-ink: #f7a39b;
+    --c-info: #6fa8f0;
+    --c-info-soft: #142538;
+    --c-info-ink: #9ec5f5;
+    --c-focus: #7bd8ae;
+    --c-series-ndvi: #199e70;
+    --c-series-ndmi: #3987e5;
+    --c-factor-1: #3987e5;
+    --c-factor-2: #d95926;
+    --c-factor-3: #199e70;
+    --c-factor-4: #c98500;
+    --c-factor-5: #d55181;
+    --c-map-outline: #d6eadf;
+    --c-map-highlight: #f0b25a;
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.25);
+    --shadow-md: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 16px 48px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 0 4px rgb(79 192 141 / 0.2), 0 0 28px rgb(79 192 141 / 0.22);
+  --c-glass: rgb(21 29 24 / 0.74);
+  }
+}
+
+@media screen {
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #0e1411;
+  --c-surface: #151d18;
+  --c-surface-2: #1b251f;
+  --c-overlay: rgb(0 0 0 / 0.55);
+  --c-line: #26332b;
+  --c-line-strong: #374740;
+  --c-ink: #e9efea;
+  --c-ink-2: #b9c4bc;
+  --c-muted: #93a097;
+  --c-primary: #4fc08d;
+  --c-primary-hover: #6bd0a1;
+  --c-primary-soft: #183026;
+  --c-primary-ink: #7bd8ae;
+  --c-on-primary: #0b1a13;
+  --c-signal: #fb8a5c;
+  --c-signal-soft: #3a1f14;
+  --c-signal-ink: #ffb08f;
+  --c-warn: #f0b25a;
+  --c-warn-soft: #34270f;
+  --c-warn-ink: #f6c77f;
+  --c-danger: #f2756a;
+  --c-danger-soft: #3a1715;
+  --c-danger-ink: #f7a39b;
+  --c-info: #6fa8f0;
+  --c-info-soft: #142538;
+  --c-info-ink: #9ec5f5;
+  --c-focus: #7bd8ae;
+  --c-series-ndvi: #199e70;
+  --c-series-ndmi: #3987e5;
+  --c-factor-1: #3987e5;
+  --c-factor-2: #d95926;
+  --c-factor-3: #199e70;
+  --c-factor-4: #c98500;
+  --c-factor-5: #d55181;
+  --c-map-outline: #d6eadf;
+  --c-map-highlight: #f0b25a;
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.25);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 16px 48px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 0 4px rgb(79 192 141 / 0.2), 0 0 28px rgb(79 192 141 / 0.22);
+  --c-glass: rgb(21 29 24 / 0.74);
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Map the tokens into Tailwind utilities (bg-surface, text-ink, rounded-lg, shadow-md, duration-base ...). */
+@theme inline {
+  --font-sans: var(--font-inter-tight), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-overlay: var(--c-overlay);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-muted: var(--c-muted);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-primary-soft: var(--c-primary-soft);
+  --color-primary-ink: var(--c-primary-ink);
+  --color-on-primary: var(--c-on-primary);
+  --color-signal: var(--c-signal);
+  --color-signal-soft: var(--c-signal-soft);
+  --color-signal-ink: var(--c-signal-ink);
+  --color-warn: var(--c-warn);
+  --color-warn-soft: var(--c-warn-soft);
+  --color-warn-ink: var(--c-warn-ink);
+  --color-danger: var(--c-danger);
+  --color-danger-soft: var(--c-danger-soft);
+  --color-danger-ink: var(--c-danger-ink);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+  --color-info-ink: var(--c-info-ink);
+  --color-focus: var(--c-focus);
+  --color-series-ndvi: var(--c-series-ndvi);
+  --color-series-ndmi: var(--c-series-ndmi);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-glow: var(--shadow-glow);
+  --color-glass: var(--c-glass);
+}
+
+@theme {
+  /* type scale: size / line height (minimum body text 15 px; 13 px only for captions and badges) */
+  --text-cap: 0.8125rem;
+  --text-cap--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.625rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 2.125rem;
+  --text-3xl--line-height: 2.5rem;
+  --text-display: 2.75rem;
+  --text-display--line-height: 3rem;
+
+  /* radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  /* motion utilities: duration-fast / duration-base / duration-slow, ease-out-quart */
+  --ease-out-quart: var(--ease-out);
+  --animate-fade-up: fade-up var(--dur-base) var(--ease-out) both;
+  --animate-fade-in: fade-in var(--dur-base) var(--ease-out) both;
+
+  /* layout */
+  --spacing-sidebar: 15rem;
+  --spacing-topbar: 3.5rem;
+  --spacing-content: 72rem;
+  --spacing-reading: 42rem;
+  --spacing-touch: 2.75rem;
+  --spacing-panel: 25rem;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility duration-fast {
+  transition-duration: var(--dur-fast);
+}
+@utility duration-base {
+  transition-duration: var(--dur-base);
+}
+@utility duration-slow {
+  transition-duration: var(--dur-slow);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--c-canvas);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Figures align in columns everywhere numbers are compared. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@layer base {
+  /* Visible keyboard focus (NFR03). */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--c-focus);
+    box-shadow: var(--shadow-glow);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+::selection {
+  background: var(--c-primary-soft);
+  color: var(--c-ink);
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: var(--text-cap);
+}
+
+/* Label / value grids (definition lists, metadata). */
+@utility grid-cols-label {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+/* Full-height work areas below the mobile top bar (map, editors). */
+@utility h-app {
+  height: calc(100dvh - var(--spacing-topbar));
+}
+
+/* Glass panel: translucent, blurred surface. Used sparingly, only for panels floating over the map. */
+@utility glass {
+  background: var(--c-glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: var(--shadow-md), inset 0 0 0 1px var(--c-line);
+}
+
+/* Route changes: the outgoing page fades, the incoming page rises 6 px and fades in (React <ViewTransition>).
+   Transform and opacity only; switched off under reduced motion. */
+::view-transition-old(.page) {
+  animation: vt-out var(--dur-fast) var(--ease-out) both;
+}
+::view-transition-new(.page) {
+  animation: vt-in var(--dur-slow) var(--ease-out) both;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Public pages (landing, sign-in) scale with the window: 16px root up to ~1540px wide, growing to 19px on
+   large displays (18px at 1920px), so the layout fills wide screens instead of floating small in the middle.
+   Rem-based spacing and widths scale with it; the signed-in app keeps its fixed size. */
+:root:has(.fluid-type) {
+  font-size: clamp(16px, 0.94vw, 19px);
+}
+
+/* Landing page (public "/"): entrance, scroll reveal and the illustrative satellite pass.
+   Transform/opacity/stroke only; the hidden starting states apply only when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  .welcome-rise {
+    animation: welcome-rise 640ms var(--ease-out) both;
+  }
+  .welcome-site {
+    animation: welcome-fade 520ms var(--ease-out) both;
+  }
+  .welcome-flag {
+    stroke-dasharray: 1;
+    animation: welcome-draw 700ms var(--ease-out) 1300ms both;
+  }
+  .welcome-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: welcome-ping 1400ms var(--ease-out) 1500ms 2 both;
+  }
+  .welcome-scan {
+    animation: welcome-scan 7s var(--ease-in-out) 700ms infinite both;
+  }
+  [data-reveal] {
+    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+  }
+  [data-reveal]:not([data-shown]) {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  .welcome-track {
+    transform-origin: left;
+    transition: transform 1100ms var(--ease-out) 200ms;
+  }
+  .welcome-track:not([data-shown]) {
+    transform: scaleX(0);
+  }
+}
+.welcome-track {
+  background: linear-gradient(90deg, var(--c-primary), var(--c-line) 85%);
+}
+.welcome-scan {
+  background: linear-gradient(90deg, transparent, rgb(23 101 74 / 0.14) 70%, rgb(23 101 74 / 0.45));
+  border-right: 1px solid rgb(23 101 74 / 0.5);
+  opacity: 0;
+}
+.welcome-ping {
+  opacity: 0;
+}
+@keyframes welcome-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes welcome-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes welcome-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes welcome-ping {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+@keyframes welcome-scan {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  10% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+    transform: translateX(calc(100cqw + 100%));
+  }
+  60%,
+  100% {
+    opacity: 0;
+    transform: translateX(calc(100cqw + 100%));
+  }
+}
+
+/* Live status: a soft pulse on the "running" dot (opacity only). */
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@utility animate-live {
+  animation: live-pulse 1.6s var(--ease-in-out) infinite;
+}
+
+/* Bottom sheets on phones never cover more than 70% of the screen. */
+@utility max-h-sheet {
+  max-height: 70dvh;
+}
+
+/* Printed reports (US22): light colours on white paper, no shadows, cards kept whole. */
+@media print {
+  :root, :root[data-theme="dark"] {
+    color-scheme: light;
+    --c-canvas: #ffffff;
+    --c-surface: #ffffff;
+    --c-surface-2: #f1eee6;
+    --c-ink: #121a15;
+    --c-ink-2: #3f4a43;
+    --c-muted: #5e6862;
+    --c-info-soft: #e8f1fc;
+    --c-info-ink: #1a4f8f;
+    --c-primary-ink: #145a42;
+  }
+  body {
+    background: #fff !important;
+  }
+  section {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}

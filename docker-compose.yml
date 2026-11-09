@@ -1,0 +1,88 @@
+name: namaa
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+  BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
+  MIN_MONITORING_AREA_M2: ${MIN_MONITORING_AREA_M2:-5000}
+  MIN_VALID_SHARE: ${MIN_VALID_SHARE:-0.7}
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://127.0.0.1:3000}
+  MEDIA_DIR: /data/media
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+  OPENAI_REASONING_EFFORT: ${OPENAI_REASONING_EFFORT:-}
+  AI_DAILY_LIMIT_PER_USER: ${AI_DAILY_LIMIT_PER_USER:-30}
+  WEATHER_AUTO_REFRESH: ${WEATHER_AUTO_REFRESH:-true}
+  SATELLITE_AUTO_REFRESH: ${SATELLITE_AUTO_REFRESH:-true}
+  SATELLITE_REFRESH_HOURS: ${SATELLITE_REFRESH_HOURS:-24}
+  SATELLITE_REFRESH_DAYS: ${SATELLITE_REFRESH_DAYS:-30}
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./docker/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: ${BACKEND_INSTALL_DEV:-true}
+    environment:
+      <<: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media:/data/media
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: ${BACKEND_INSTALL_DEV:-true}
+    command: ["python", "-m", "app.worker"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - media:/data/media
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  media:

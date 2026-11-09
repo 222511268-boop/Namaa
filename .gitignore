@@ -1,0 +1,17 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+node_modules/
+.next/
+frontend/test-results/
+frontend/playwright-report/
+~$*.docx
+frontend/public/vendor/
+deliverables/
+frontend/tsconfig.tsbuildinfo
+backups/
+docker/nginx/tls/

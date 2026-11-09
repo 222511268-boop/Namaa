@@ -1,0 +1,41 @@
+# End-to-end test stack: an isolated copy of the application with its own database and a
+# stand-in Overpass service. Start with scripts/test-e2e.sh (project name "namaa-e2e").
+services:
+  ai-mock:
+    image: python:3.12-slim
+    command: ["python", "/srv/server.py"]
+    volumes:
+      - ./docker/ai-mock/server.py:/srv/server.py:ro
+  overpass-mock:
+    image: python:3.12-slim
+    command: ["python", "/srv/server.py"]
+    volumes:
+      - ./docker/overpass-mock/server.py:/srv/server.py:ro
+      - ./backend/tests/fixtures:/fixtures:ro
+
+  backend:
+    environment:
+      OVERPASS_URL: http://overpass-mock:8080/api/interpreter
+      OVERPASS_FALLBACK_URLS: "[]"
+      BOOTSTRAP_ADMIN_EMAIL: e2e.admin@example.com
+      BOOTSTRAP_ADMIN_PASSWORD: e2e-admin-password
+      PUBLIC_BASE_URL: http://127.0.0.1:${E2E_PORT:-3200}
+      OPENAI_API_KEY: e2e-not-a-real-key
+      OPENAI_BASE_URL: http://ai-mock:8080/v1
+    ports: !reset []
+    depends_on:
+      overpass-mock:
+        condition: service_started
+      ai-mock:
+        condition: service_started
+
+  worker:
+    environment:
+      OVERPASS_URL: http://overpass-mock:8080/api/interpreter
+      WEATHER_AUTO_REFRESH: "false"
+      SATELLITE_AUTO_REFRESH: "false"
+      OPENAI_API_KEY: ""
+
+  frontend:
+    ports: !override
+      - "127.0.0.1:${E2E_PORT:-3200}:3000"
